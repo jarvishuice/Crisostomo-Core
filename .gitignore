@@ -1,0 +1,88 @@
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+venv/
+.env/
+.env.bak/
+.venv/
+ENV/
+env/
+
+# Archivos de configuración locales
+*.env
+*.ini
+*.toml
+
+# Byte-compiled / cache
+*.pyo
+*.pyd
+*.pkl
+*.pklz
+
+# ============================================
+# FASTAPI / UVICORN
+# ============================================
+# Almacenamiento temporal de servidores
+*.log
+logs/
+uvicorn.log
+gunicorn.log
+
+# Archivos AUTO-GENERADOS por documentación (Swagger)
+openapi.json
+
+# ============================================
+# BASE DE DATOS / MIGRATIONS
+# ============================================
+*.db
+*.sqlite3
+/migrations/__pycache__/
+alembic.ini.bak
+
+# ============================================
+# EDITORES / IDEs
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# PyCharm
+*.iml
+.idea/
+
+# ============================================
+# SISTEMA
+# ============================================
+.DS_Store
+Thumbs.db
+
+# ============================================
+# DIST / BUILD
+# ============================================
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# ============================================
+# TESTING
+# ============================================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+
+# ============================================
+# DOCKER
+# ============================================
+docker-compose.override.yml
