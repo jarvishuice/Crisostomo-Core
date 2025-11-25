@@ -54,7 +54,8 @@ alembic.ini.bak
 
 # PyCharm
 *.iml
-.idea/
+.idea
+.env
 
 # ============================================
 # SISTEMA
