@@ -4,6 +4,7 @@ from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
 from fastapi import FastAPI
 
 from Presentation.MIddleWare.RequestLoggingMiddleware import RequestLoggingMiddleware
+from Presentation.Routes.AuthRouter import AUTH_ROUTER
 from Presentation.Routes.UsersRouter import USER_ROUTER
 
 # ------------------------------
@@ -50,3 +51,4 @@ app.add_middleware(RequestLoggingMiddleware)
 # Routers
 # ------------------------------
 app.include_router(USER_ROUTER)
+app.include_router(AUTH_ROUTER)
