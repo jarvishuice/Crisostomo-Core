@@ -43,7 +43,7 @@ openapi.json
 *.sqlite3
 /migrations/__pycache__/
 alembic.ini.bak
-
+env
 # ============================================
 # EDITORES / IDEs
 # ============================================
