@@ -1,11 +1,10 @@
 from threading import Lock
 from typing import Optional, Any
-from psycopg_pool import ConnectionPool
-from Domain.kernel.IDatabasePool import IDatabasePool
+from psycopg_pool import AsyncConnectionPool
 from logging import getLogger
+import asyncio
 
-
-class PostgreSQLPool(IDatabasePool):
+class PostgreSQLPoolMaster:
     _instance = None
     _lock = Lock()
 
@@ -14,89 +13,88 @@ class PostgreSQLPool(IDatabasePool):
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = super(PostgreSQLPool, cls).__new__(cls)
+                    cls._instance = super(PostgreSQLPoolMaster, cls).__new__(cls)
                     cls._instance._initialized = False
         return cls._instance
 
-    def __init__(self, connection_string: str = None, minconn: int = 1, maxconn: int = 10,appliction_name:str="Sin nombre de app"):
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+
+            raise Exception("PoolMaster aún no ha sido inicializado")
+        return cls._instance
+    def __init__(
+        self,
+        user: str,
+        password: str,
+        host: str,
+        port: int,
+        dbname: str,
+        minconn: int = 1,
+        maxconn: int = 10,
+        application_name: str = "Sin nombre de app",
+    ):
         if getattr(self, "_initialized", False):
             return
 
         self.logger = getLogger("AppLogger")
-        self.connection_string = connection_string
-        self.minconn:int = minconn
-        self.maxconn:int = maxconn
-        self.pool: Optional[ConnectionPool] = None
+        self.user = user
+        self.password = password
+        self.host = host
+        self.port = int(port)
+        self.dbname = dbname
+        self.minconn = int(minconn)
+        self.maxconn = int(maxconn)
+        self.application_name = application_name
 
-        if connection_string:
-            self.initialize(connection_string,appliction_name)
+        self.pool: Optional[AsyncConnectionPool] = None
 
         self._initialized = True
 
-    # ------------------------------
-    # Inicializar pool
-    # ------------------------------
-    def initialize(self, connection_string: str,application_name: str = None):
-        self.connection_string = connection_string
-        if application_name:
-            if "application_name=" not in self.connection_string:
-                if self.connection_string.endswith(" "):
-                    self.connection_string += f"application_name={application_name}"
-                else:
-                    self.connection_string += f" application_name={application_name}"
-
+    async def initialize(self):
+        """Inicializa el pool dentro de un loop asíncrono"""
+        if self.pool:
+            return  # ya inicializado
         try:
-            self.pool = ConnectionPool(
-                conninfo=self.connection_string,
+            conninfo = (
+                f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.dbname}"
+                f"?application_name={self.application_name}"
+            )
+            self.pool = AsyncConnectionPool(
+                conninfo=conninfo,
                 min_size=self.minconn,
                 max_size=self.maxconn
             )
-            self.logger.info("Pool de PostgreSQL inicializado correctamente")
+            # Abrimos el pool dentro del loop
+            await self.pool.open()
+            self.logger.info(f"Async Pool de PostgreSQL '{self.application_name}' inicializado correctamente")
         except Exception as e:
-            self.logger.error(f"Error inicializando pool PostgreSQL: {e}")
+            self.logger.error(f"Error inicializando async pool PostgreSQL: {e}")
             raise e
 
-    # ------------------------------
-    # Obtener conexión
-    # ------------------------------
-    def get_connection(self):
+    async def get_connection(self):
         if not self.pool:
-            raise Exception("Pool no inicializado")
-        return self.pool.connection()
+            raise Exception("Pool no inicializado, llama primero a initialize()")
+        return self.pool.connection()  # devuelve un context manager async
 
-    # ------------------------------
-    # Liberar conexión
-    # ------------------------------
-    def release_connection(self, connection):
-        if connection:
-            connection.close()  # psycopg_pool devuelve conexión al pool automáticamente
-            self.logger.debug("Conexión devuelta al pool")
-
-    # ------------------------------
-    # Cerrar todo el pool
-    # ------------------------------
-    def close_pool(self):
-        if self.pool:
-            self.pool.close()
-            self.logger.info("Pool de PostgreSQL cerrado")
-
-    # ------------------------------
-    # Ejecutar consulta rápida
-    # ------------------------------
-    def execute(self, query: str, params: tuple = None, fetch: bool = False) -> Any:
+    async def execute(self, query: str, params: tuple = None, fetch: bool = False) -> Any:
         if not self.pool:
-            raise Exception("Pool no inicializado")
+            raise Exception("Pool no inicializado, llama primero a initialize()")
         result = None
         try:
-            with self.get_connection() as conn:
-                with conn.cursor() as cur:
-                    cur.execute(query, params or ())
+            async with await self.get_connection() as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute(query, params or ())
                     if fetch:
-                        result = cur.fetchall()
-                        self.logger.debug(f"Consulta ejecutada y resultados obtenidos: {len(result)} filas")
-                    else:
-                        self.logger.debug("Consulta ejecutada correctamente")
+                        result = await cur.fetchall()
             return result
         except Exception as e:
-            self.logger.error(f"Error ejecutando consulta: {e} | Query: {query} | Params: {params}")
+            self.logger.error(f"Error ejecutando consulta async: {e} | Query: {query} | Params: {params}")
             raise e
+
+    async def close_pool(self):
+        if self.pool:
+            await self.pool.close()
+            self.logger.info(f"Async Pool de PostgreSQL '{self.application_name}' cerrado")
+
+

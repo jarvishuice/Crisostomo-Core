@@ -1,13 +1,52 @@
 from Config.Settings import Settings
-from Infrastructure.Providers.AppLogger import  AppLogger
-from pruebaLogs import execute
-from Infrastructure.Providers.PostgreSQLPoolMaster import  PostgreSQLPool
+from Infrastructure.Providers.AppLogger import AppLogger
+from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
+from fastapi import FastAPI
+
+from Presentation.MIddleWare.RequestLoggingMiddleware import RequestLoggingMiddleware
+from Presentation.Routes.UsersRouter import USER_ROUTER
+
+# ------------------------------
+# Inicializar Settings y Logger
+# ------------------------------
 settings = Settings()
 log = AppLogger(settings.LOG_PATH)
-PostgreSQLPool(minconn=4,maxconn=10,connection_string=f"postgresql://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}",appliction_name=settings.APP_NAME)
-log.info("Iniciando AppLogger")
-print(settings.DB_HOST)
-print(settings.APP_NAME)
-print(settings.LOG_PATH)
+app = FastAPI()
 
-execute()
+log.info("Iniciando AppLogger")
+
+print("Host:", settings.DB_HOST)
+print("App Name:", settings.APP_NAME)
+print("Log Path:", settings.LOG_PATH)
+
+# Instancia del pool (Singleton)
+db_pool = PostgreSQLPoolMaster(
+    user=settings.DB_USER,
+    password=settings.DB_PASSWORD,
+    host=settings.DB_HOST,
+    port=settings.DB_PORT,
+    dbname=settings.DB_NAME,
+    minconn=20,
+    maxconn=50,
+    application_name=settings.APP_NAME,
+)
+
+# ------------------------------
+# Eventos de ciclo de vida
+# ------------------------------
+@app.on_event("startup")
+async def startup_event():
+    log.info("FastAPI inicializado")
+    await db_pool.initialize()   # inicializamos el pool aquí
+    log.info("PostgreSQLPool inicializado correctamente")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    print("🛑 La aplicación se está cerrando...")
+    await db_pool.close_pool()   # cerramos el pool de forma segura
+
+app.add_middleware(RequestLoggingMiddleware)
+# ------------------------------
+# Routers
+# ------------------------------
+app.include_router(USER_ROUTER)
