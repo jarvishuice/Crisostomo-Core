@@ -10,7 +10,7 @@ from psycopg.rows import dict_row
 class AuthorDAO(IAuthorDAO):
     def __init__(self,db: PostgreSQLPoolMaster=None):
         self.db = PostgreSQLPoolMaster.get_instance()
-        self.logger = getLogger(__name__)
+        self.logger = getLogger("AppLogger")
 
     async def get_all_authors(self) -> List[AuthorEntity]:
         """Devuelve todos los autores"""
