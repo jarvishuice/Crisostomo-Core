@@ -2,7 +2,6 @@ from threading import Lock
 from typing import Optional, Any
 from psycopg_pool import AsyncConnectionPool
 from logging import getLogger
-import asyncio
 
 class PostgreSQLPoolMaster:
     _instance = None

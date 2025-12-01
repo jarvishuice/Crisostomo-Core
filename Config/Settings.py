@@ -43,5 +43,6 @@ class Settings:
         self.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
         self.ALGORITHM = os.getenv("ALGORITHM", "HS256")
         self.ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv("ACCESS_TOKEN_EXPIRE_HOURS", "8"))
+        self.AUTHOR_IMG_PATH = os.getenv("AUTHOR_IMG_PATH","./NOLOCONSEGUI")
     def __repr__(self):
         return f"<Settings env={self.APP_ENV} debug={self.APP_DEBUG}>"
