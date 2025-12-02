@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from threading import Lock
 
+
 class Settings:
     _instance = None
     _lock = Lock()
@@ -43,6 +44,9 @@ class Settings:
         self.ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
         self.ALGORITHM = os.getenv("ALGORITHM", "HS256")
         self.ACCESS_TOKEN_EXPIRE_HOURS = int(os.getenv("ACCESS_TOKEN_EXPIRE_HOURS", "8"))
-        self.AUTHOR_IMG_PATH = os.getenv("AUTHOR_IMG_PATH","./NOLOCONSEGUI")
+        self.AUTHOR_IMG_PATH = os.getenv("AUTHOR_IMG_PATH", "./NOLOCONSEGUI")
+        self.BOOK_IMG_PATH = os.getenv("BOOK_IMG_PATH", "./NOLOCONSEGUI")
+        self.PDF_PATH = os.getenv("PDF_PATH", "./NOLOCONSEGUI")
+
     def __repr__(self):
         return f"<Settings env={self.APP_ENV} debug={self.APP_DEBUG}>"

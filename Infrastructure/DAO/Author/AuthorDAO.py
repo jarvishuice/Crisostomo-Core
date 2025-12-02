@@ -59,7 +59,7 @@ class AuthorDAO(IAuthorDAO):
             raise e
 
     async def search_author(self, param: str) -> List[AuthorEntity]:
-        print("PASEEEEE")
+
         """Devuelve una lista de autores por su nombre o descripción (ILIKE)."""
         query = """
             SELECT cod, "name" AS name_author, description, created_at, updated_at
