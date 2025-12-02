@@ -60,5 +60,3 @@ app.include_router(USER_ROUTER)
 app.include_router(AUTH_ROUTER)
 app.include_router(AUTHOR_ROUTER)
 app.include_router(CATEGORY_ROUTER)
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
