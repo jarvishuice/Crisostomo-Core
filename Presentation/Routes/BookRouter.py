@@ -1,6 +1,4 @@
-import io
 import json
-import os
 from logging import getLogger
 from fastapi import APIRouter, Response, status, HTTPException, Depends, UploadFile, File
 
@@ -15,7 +13,6 @@ BOOK_ROUTER = APIRouter(
     tags=["book"],
 
 )
-
 
 def get_dao():
     pool = PostgreSQLPoolMaster.get_instance()
@@ -39,11 +36,13 @@ async def create(book: BookEntity, dao: BookDAO = Depends(get_dao)) -> Response:
             detail=str(ex)
 
         )
+
+
 @BOOK_ROUTER.get("/", status_code=status.HTTP_200_OK)
-async def get(size:int=100,page:int=1, dao: BookDAO = Depends(get_dao)) -> Response:
+async def get(size: int = 100, page: int = 1, dao: BookDAO = Depends(get_dao)) -> Response:
     services = BookService(dao)
     try:
-        res = await services.get_books(size,page)
+        res = await services.get_books(size, page)
 
         return Response(status_code=status.HTTP_200_OK,
                         media_type="application/json",
@@ -54,8 +53,10 @@ async def get(size:int=100,page:int=1, dao: BookDAO = Depends(get_dao)) -> Respo
             detail=str(ex)
 
         )
+
+
 @BOOK_ROUTER.get("/filter/category/{category}", status_code=status.HTTP_200_OK)
-async def filterByCategory(category:str, dao: BookDAO = Depends(get_dao)) -> Response:
+async def filterByCategory(category: str, dao: BookDAO = Depends(get_dao)) -> Response:
     services = BookService(dao)
     try:
         res = await services.getByCategory(category)
@@ -70,8 +71,9 @@ async def filterByCategory(category:str, dao: BookDAO = Depends(get_dao)) -> Res
 
         )
 
+
 @BOOK_ROUTER.get("/filter/area/{area}", status_code=status.HTTP_200_OK)
-async def filterByArea(area:str, dao: BookDAO = Depends(get_dao)) -> Response:
+async def filterByArea(area: str, dao: BookDAO = Depends(get_dao)) -> Response:
     services = BookService(dao)
     try:
         res = await services.getByArea(area)
@@ -86,8 +88,9 @@ async def filterByArea(area:str, dao: BookDAO = Depends(get_dao)) -> Response:
 
         )
 
+
 @BOOK_ROUTER.get("/filter/subarea/{subarea}", status_code=status.HTTP_200_OK)
-async def filterBySubArea(subArea:str, dao: BookDAO = Depends(get_dao)) -> Response:
+async def filterBySubArea(subArea: str, dao: BookDAO = Depends(get_dao)) -> Response:
     services = BookService(dao)
     try:
         res = await services.getBySubArea(subArea)
