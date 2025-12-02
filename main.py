@@ -47,7 +47,9 @@ async def startup_event():
 async def shutdown_event():
     print("🛑 La aplicación se está cerrando...")
     await db_pool.close_pool()   # cerramos el pool de forma segura
-
+@app.get("/")
+def index():
+    return {"Hello": "World"}
 app.add_middleware(RequestLoggingMiddleware)
 # ------------------------------
 # Routers
