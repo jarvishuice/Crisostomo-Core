@@ -31,7 +31,24 @@ log = getLogger("AppLogger")
 
 
 
+@AUTHOR_ROUTER.post("/", status_code=status.HTTP_201_CREATED)
+async def create(entity: AuthorRequest, dao: IAuthorDAO = Depends(get_dao)) -> Response:
+    services = AuthorService(dao)
 
+    try:
+        res = await services.create(entity.name, entity.description)  # faltaba cerrar paréntesis
+        if res == False:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(entity))
+
+        return Response(status_code=status.HTTP_201_CREATED)
+
+    except Exception as ex:
+        # Captura cualquier error inesperado
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ex)
+
+        )
 
 @AUTHOR_ROUTER.get("/", status_code=status.HTTP_200_OK)
 async def getAll(dao: AuthorDAO = Depends(get_dao)) -> Response:
@@ -82,24 +99,7 @@ async def search(param: str, dao: AuthorDAO = Depends(get_dao)) -> Response:
 
         )
 
-@AUTHOR_ROUTER.post("/", status_code=status.HTTP_201_CREATED)
-async def create(entity: AuthorRequest, dao: IAuthorDAO = Depends(get_dao)) -> Response:
-    services = AuthorService(dao)
 
-    try:
-        res = await services.create(entity.name, entity.description)  # faltaba cerrar paréntesis
-        if res == False:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(entity))
-
-        return Response(status_code=status.HTTP_201_CREATED)
-
-    except Exception as ex:
-        # Captura cualquier error inesperado
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(ex)
-
-        )
 
 
 @AUTHOR_ROUTER.put("/", status_code=status.HTTP_201_CREATED)
