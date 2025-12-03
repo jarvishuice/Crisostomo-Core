@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
 
+
 class AuthorEntity(BaseModel):
     cod: Optional[str] = Field(None, description="Código único del autor")
     name: str = Field(..., description="Nombre del autor")
@@ -9,12 +10,9 @@ class AuthorEntity(BaseModel):
     created_at: Optional[datetime] = Field(None, description="Fecha de creación")
     updated_at: Optional[datetime] = Field(None, description="Fecha de actualización")
 
-    class Config:
-        from_attributes = True  # para compatibilidad con ORMs si luego se usa
+    def serialize(self) -> dict:
 
-    def serialize(self)->dict:
-
-        data =  self.model_dump()
+        data = self.model_dump()
         if self.created_at:
             data["created_at"] = self.created_at.isoformat()
         if self.updated_at:

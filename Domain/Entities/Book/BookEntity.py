@@ -16,9 +16,6 @@ class BookEntity(BaseModel):
     author:str
     process_img: bool = False
 
-    class Config:
-        from_attributes = True
-
     def serialize(self) -> dict:
         data = self.model_dump()
         if self.created_at:

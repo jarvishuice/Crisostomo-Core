@@ -39,5 +39,3 @@ class UserEntity(BaseModel):
             data["updated_at"] = self.updated_at.isoformat()
         return data
 
-    class Config:
-        orm_mode = True  # Permite interoperabilidad con ORMs si se desea en el futuro

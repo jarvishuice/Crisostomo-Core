@@ -9,8 +9,7 @@ class BookReadEntity(BookEntity):
     fullname_user: str
     author_name: str
 
-    class Config:
-        from_attributes = True
+
 
     def serialize(self) -> dict:
 
