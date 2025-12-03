@@ -3,31 +3,27 @@ name: Test and Deploy to Integracion
 on:
   push:
     branches:
-      - desarrollo   # SE EJECUTA SOLO CUANDO HAY CAMBIOS EN DESARROLLO
+      - desarrollo
 
 jobs:
   test_and_coverage:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Descargar código
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Configurar Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' # Ajusta según tu proyecto
+          python-version: '3.11'
 
-      # 3️⃣ Instalar dependencias
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      # 4️⃣ Ejecutar Test + Cobertura
       - name: Run tests with coverage
         run: |
           pytest Test --cov=./ --cov-report=xml --cov-fail-under=10 -o python_files=Test_*.py
@@ -38,31 +34,32 @@ jobs:
     if: success()
 
     steps:
-      - name: Checkout with full history
+      - name: Checkout repository with full history
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0   # NECESARIO PARA PODER HACER MERGES
+          fetch-depth: 0
 
       - name: Configure Git
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Ensure integracion branch exists
+      - name: Fetch all branches
         run: |
-          git fetch origin
+          git fetch --all
+
+      - name: Create integracion branch if not exists
+        run: |
           if git show-ref --quiet refs/remotes/origin/integracion; then
-            echo "Branch integracion already exists."
+            echo "Branch integracion exists."
           else
-            echo "Creating branch integracion..."
+            echo "Creating integracion..."
             git checkout -b integracion
             git push origin integracion
           fi
 
       - name: Merge desarrollo into integracion
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git checkout integracion
-          git merge origin/desarrollo --no-ff --allow-unrelated-histories -m "Auto-merge desde desarrollo"
+          git merge origin/desarrollo --allow-unrelated-histories -m "Auto-merge desde desarrollo"
           git push origin integracion
