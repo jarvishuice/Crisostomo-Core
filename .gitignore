@@ -88,3 +88,4 @@ poppler/
 # DOCKER
 # ============================================
 docker-compose.override.yml
+poppler/
