@@ -48,15 +48,6 @@ jobs:
         run: |
           git fetch --all
 
-      - name: Create integracion branch if not exists
-        run: |
-          if git show-ref --quiet refs/remotes/origin/integracion; then
-            echo "Branch integracion exists."
-          else
-            echo "Creating integracion..."
-            git checkout -b integracion
-            git push origin integracion
-          fi
 
       - name: Merge desarrollo into integracion
         run: |
