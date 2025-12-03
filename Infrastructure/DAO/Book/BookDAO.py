@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from psycopg.rows import dict_row
 from typing_extensions import override
+import os
+from Config.Settings import Settings
 from Domain.Entities.Book.BookEntity import BookEntity
 from Domain.Entities.Book.BookReadEntity import BookReadEntity
 from Domain.IDAO.Book.IBookDAO import IBookDAO
@@ -10,9 +12,56 @@ from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
 
 
 class BookDAO(IBookDAO):
+
     def __init__(self, db: PostgreSQLPoolMaster = None):
         self.db = PostgreSQLPoolMaster.get_instance()
         self.logger = getLogger("AppLogger")
+
+    @override
+    async def getBooksNoneImgPreview(self) -> List[str]:
+        query = """
+                                select code from book b where b.proccess_img =false 
+
+
+                                       """
+
+        try:
+            async with await self.db.get_connection() as conn:
+                # Configuramos cursor para obtener diccionarios
+                async with conn.cursor(row_factory=dict_row) as cur:
+                    await cur.execute(query)
+                    rows = await cur.fetchall()
+
+            books: List[str] = [
+                row.get("code") for row in rows
+            ]
+
+            self.logger.info(f"libros sin imagenes de previsualizacion leidas  correctamente: {len(books)}  ")
+            return books
+
+        except Exception as e:
+            self.logger.error(f"Error obteniendo todos los libros sin imagemnnes: {e}")
+            return []
+
+    @override
+    async def checkImg(self, cod) -> bool:
+        query = """
+                   UPDATE book
+                   SET proccess_img = true
+                   WHERE code = %s
+               """
+        try:
+            async with await self.db.get_connection() as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute(query, (cod,))
+                    await conn.commit()  # Muy importante para que el cambio quede guardado
+
+            self.logger.info(f"Libro {cod} marcado como procesado")
+            return True
+
+        except Exception as e:
+            self.logger.error(f"Error marcando libro {cod} como procesado: {e}")
+            return False
 
     @override
     async def get_by_category(self, category: str) -> List[BookReadEntity]:
@@ -255,8 +304,28 @@ class BookDAO(IBookDAO):
             self.logger.error(f"Error creando libro '{book.code}': {e}")
             return False
 
-    def save_pdf(self, pdf_file) -> bool:
-        pass
+    @override
+    async def save_pdf(self, pdf_file, cod: str) -> bool:
+        se = Settings()
+        pathBase = se.PDF_PATH
+        os.makedirs(pathBase, exist_ok=True)
+        try:
+            if pdf_file.content_type != "application/pdf":
+                raise ValueError("El archivo no es un PDF válido")
+            book = await self.get_by_code(cod)
+            if not book:
+                raise Exception("El libro no existe")
+            nameFile = f"{cod}.pdf"
+            filePath = os.path.join(pathBase, nameFile)
+
+            content = await pdf_file.read()
+            with open(filePath, "wb") as f:
+                f.write(content)
+            return True
+
+        except Exception as e:
+            self.logger.error(e)
+            raise e
 
     @override
     async def get_by_area(self, area: str) -> List[BookReadEntity]:

@@ -1,3 +1,6 @@
+import asyncio
+import threading
+
 import uvicorn
 
 from Config.Settings import Settings
@@ -5,6 +8,7 @@ from Infrastructure.Providers.AppLogger import AppLogger
 from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
 from fastapi import FastAPI
 
+from Presentation.Delegates.GeneratePreviewImageDelegate import GeneratePreviewImageDelegate
 from Presentation.MIddleWare.RequestLoggingMiddleware import RequestLoggingMiddleware
 from Presentation.Routes.AuthRouter import AUTH_ROUTER
 from Presentation.Routes.AuthorRouter import AUTHOR_ROUTER
@@ -38,6 +42,10 @@ db_pool = PostgreSQLPoolMaster(
     application_name=settings.APP_NAME,
 )
 
+def start_delegate_loop(minutes: int):
+    """Función que corre el loop async en un hilo separado"""
+    asyncio.run(GeneratePreviewImageDelegate.run(minutes))
+
 # ------------------------------
 # Eventos de ciclo de vida
 # ------------------------------
@@ -47,13 +55,20 @@ async def startup_event():
     await db_pool.initialize()   # inicializamos el pool aquí
     log.info("PostgreSQLPool inicializado correctamente")
 
+
+    asyncio.create_task(GeneratePreviewImageDelegate.run(1))
+    log.info("GeneratePreviewImageDelegate corriendo en hilo aparte")
+
 @app.on_event("shutdown")
 async def shutdown_event():
     print("🛑 La aplicación se está cerrando...")
     await db_pool.close_pool()   # cerramos el pool de forma segura
+    GeneratePreviewImageDelegate.stop()
+    log.info("Worker detenido correctamente")
 @app.get("/")
 def index():
     return {"Hello": "World"}
+
 app.add_middleware(RequestLoggingMiddleware)
 # ------------------------------
 # Routers

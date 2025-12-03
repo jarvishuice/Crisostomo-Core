@@ -110,7 +110,7 @@ class IBookDAO(ABC):
         pass
 
     @abstractmethod
-    async def save_pdf(self, pdf_file) -> bool:
+    async def save_pdf(self, pdf_file, code: str) -> bool:
         """
         Guarda el archivo PDF asociado a un libro.
 
@@ -123,4 +123,18 @@ class IBookDAO(ABC):
         Retorna:
             bool: True si el archivo fue guardado exitosamente.
         """
+        pass
+
+    @abstractmethod
+    async def getBooksNoneImgPreview(self) -> List[str]:
+        """
+        extrae  todos los librois que no tengan imagenes de previsualizacion.
+
+        Retorna:
+            List[BookEntity]: todas los libros que no tenga inmagenes de previsaulza
+        """
+        pass
+
+    @abstractmethod
+    async def checkImg(self, cod) -> bool:
         pass

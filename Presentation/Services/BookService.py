@@ -46,6 +46,7 @@ class BookService:
         except Exception as e:
             self.__log.error(e)
             raise e
+
     async def search(self, param: str) -> List[BookReadEntity]:
         try:
             return await self.__SearchBook.Execute(param)
@@ -54,9 +55,9 @@ class BookService:
             self.__log.error(e)
             raise e
 
-    async def save(self, entity: BookEntity) -> bool:
+    async def save(self, entity: BookEntity,pdf_file) -> bool:
         try:
-            return await self.__SaveBook.Execute(entity)
+            return await self.__SaveBook.Execute(entity,pdf_file)
         except Exception as e:
             self.__log.error(e)
             raise e

@@ -1,7 +1,14 @@
+import io
 import json
+import os
 from logging import getLogger
-from fastapi import APIRouter, Response, status, HTTPException, Depends, UploadFile, File
 
+from PIL import Image
+from fastapi import APIRouter, Response, status, HTTPException, Depends, UploadFile, File, Form
+from fastapi.responses import FileResponse
+from starlette.responses import StreamingResponse
+
+from Config.Settings import Settings
 from Domain.Entities.Book.BookEntity import BookEntity
 from Infrastructure.DAO.Book.BookDAO import BookDAO
 from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
@@ -13,6 +20,8 @@ BOOK_ROUTER = APIRouter(
     tags=["book"],
 
 )
+settings = Settings()
+
 
 def get_dao():
     pool = PostgreSQLPoolMaster.get_instance()
@@ -23,10 +32,14 @@ log = getLogger("AppLogger")
 
 
 @BOOK_ROUTER.post("/", status_code=status.HTTP_200_OK)
-async def create(book: BookEntity, dao: BookDAO = Depends(get_dao)) -> Response:
+async def create(book: str = Form(...), pdf_file: UploadFile = File(...), dao: BookDAO = Depends(get_dao)) -> Response:
     services = BookService(dao)
     try:
-        res = await services.save(book)
+        book_data = json.loads(book)
+        book_entity = BookEntity(**book_data)
+        res = await services.save(book_entity, pdf_file)
+        if not res:
+            raise
 
         return Response(status_code=status.HTTP_201_CREATED,
                         media_type="application/json")
@@ -104,3 +117,60 @@ async def filterBySubArea(subArea: str, dao: BookDAO = Depends(get_dao)) -> Resp
             detail=str(ex)
 
         )
+@BOOK_ROUTER.get("/preview-pdf/{code}", status_code=status.HTTP_200_OK)
+async def preview_pdf(code: str, dao: BookDAO = Depends(get_dao)):
+    """
+    Devuelve el PDF para previsualización en el navegador.
+    Si el cliente quiere, puede descargarse usando la opción del navegador.
+    """
+    pdf_path = os.path.join(settings.PDF_PATH, f"{code}.pdf")
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF no encontrado")
+
+    return FileResponse(
+        path=pdf_path,
+        media_type="application/pdf",
+        filename=f"{code}.pdf",
+        headers={"Content-Disposition": f"inline; filename={code}.pdf"}
+    )
+
+@BOOK_ROUTER.get("/pdf/{code}", status_code=status.HTTP_200_OK)
+async def get_pdf(code: str, dao: BookDAO = Depends(get_dao)):
+    """
+    Devuelve el PDF del libro correspondiente al código.
+    """
+    pdf_path = os.path.join(settings.PDF_PATH, f"{code}.pdf")
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF no encontrado")
+    return FileResponse(path=pdf_path, media_type="application/pdf", filename=f"{code}.pdf")
+
+
+@BOOK_ROUTER.get("/img/{cod}/{width}/{height}")
+async def get_image(cod: str, width: int = 300, height: int = 300):
+    # Ruta de la imagen original
+    image_path = os.path.join(settings.BOOK_IMG_PATH, f"{cod}.png")
+
+    if not os.path.exists(image_path):
+        raise HTTPException(status_code=404, detail="Imagen del libro no encontrada")
+
+    try:
+        # Abrir imagen original
+        image = Image.open(image_path)
+
+        # Redimensionar
+        resized_img = image.resize((width, height))
+
+        # Convertir a bytes PNG
+        img_bytes = io.BytesIO()
+        resized_img.save(img_bytes, format="PNG")
+        img_bytes.seek(0)
+
+        # Retornar como StreamingResponse
+        return StreamingResponse(img_bytes, media_type="image/png")
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error procesando la imagen: {e}"
+        )
+
