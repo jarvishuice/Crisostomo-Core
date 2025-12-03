@@ -28,7 +28,15 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest Test --cov=./ --cov-report=xml --cov-fail-under=10 -o python_files=Test_*.py
-
+      - name: Check coverage threshold
+        run: |
+          coverage=$(pytest --cov=./ --cov-report=xml | grep "<coverage" | sed -E 's/.*line-rate="([0-9.]+)".*/\1/')
+          percent=$(echo "$coverage * 100" | bc)
+          echo "Coverage: $percent%"
+          if (( $(echo "$percent < 10" | bc -l) )); then
+            echo "Coverage too low: $percent%"
+            exit 1
+          fi
   deploy_to_integracion:
     runs-on: ubuntu-latest
     needs: test_and_coverage
