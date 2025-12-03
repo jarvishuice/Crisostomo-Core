@@ -87,3 +87,4 @@ pytest_cache/
 # DOCKER
 # ============================================
 docker-compose.override.yml
+poppler/
