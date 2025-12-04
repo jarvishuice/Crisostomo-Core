@@ -4,15 +4,8 @@ import { Login } from "../../features/auth/pages/Login";
 import { Register } from "../../features/auth/pages/Register";
 import { PrivateRoute } from "../../features/auth/components/PrivateRoute";
 import { BooksPage } from "../../features/books/pages/BooksPage";
-import { CreateBookForm } from "../../features/books/components/FormCreateBook";
 import CreateBookPage from "../../features/books/pages/CreateBookPage";
-
-// Pages importadas desde features
-// import BooksPage from "../../features/books/pages/BooksPage";
-// import BookDetailPage from "../../features/books/pages/BookDetailPage";
-
-// import CategoriesPage from "../../features/categories/pages/CategoriesPage";
-// import AuthorsPage from "../../features/authors/pages/AuthorsPage";
+import { ReadBook } from "../../features/books/pages/ReadBook";
 
 
 // Layout general
@@ -25,7 +18,7 @@ export default function AppRoutes() {
                 {/* libros */}
                 <Route path="/books" element={<PrivateRoute><BooksPage></BooksPage></PrivateRoute>} />
                <Route  path="/addBook" element = {<PrivateRoute><CreateBookPage></CreateBookPage></PrivateRoute>}/>
-
+               <Route path="/read/:code/:name" element={<ReadBook />} />
                 {/* Home */}
                 <Route path="/" element={<PrivateRoute><h1>Bienvenido</h1></PrivateRoute>} />
             </Route>

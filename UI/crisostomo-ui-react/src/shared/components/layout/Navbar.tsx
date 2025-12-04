@@ -28,6 +28,7 @@
 import React, { useContext } from "react";
 import { API_URL } from "../../global/globalValues";
 import { AuthContext } from "../../../features/auth/context/AuthContext";
+import { Link } from "react-router-dom";
 
 
 export const Navbar: React.FC = () => {
@@ -54,8 +55,8 @@ export const Navbar: React.FC = () => {
 
                 {/* Links */}
                 <div className="flex items-center gap-6 text-sm font-light text-white">
-                    <a href="/dashboard" className="hover:text-gray-300">Dashboard</a>
-                    <a href="/books" className="hover:text-gray-300">Books</a>
+                   
+                    <Link to="/books" className="hover:text-gray-300">Libros</Link>
                     <a href="/authors" className="hover:text-gray-300">Authors</a>
 
                     {/* 🔥 Logout Button */}

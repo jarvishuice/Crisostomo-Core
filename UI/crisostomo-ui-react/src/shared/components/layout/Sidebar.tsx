@@ -24,11 +24,9 @@ export const Sidebar: React.FC = () => {
 
             <ul className="p-4 space-y-2 text-sm">
                 <li>
-                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/dashboard">Libros</Link>
+                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/books">Libros</Link>
                 </li>
-                <li>
-                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/books">Categorias</Link>
-                </li>
+            
                 <li>
                     <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/categories">Autores</Link>
                 </li>
