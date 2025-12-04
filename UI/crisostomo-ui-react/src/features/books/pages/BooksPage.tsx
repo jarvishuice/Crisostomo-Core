@@ -14,7 +14,7 @@ export function BooksPage(){
       onClick={handleClick}
       className="bg-blue-600 text-white px-4 py-2 rounded"
     >
-    Crear Libro
+    Publicar Libro
     </button>
        <div  className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full"> 
       

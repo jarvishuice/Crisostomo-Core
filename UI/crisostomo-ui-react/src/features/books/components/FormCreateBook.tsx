@@ -197,7 +197,7 @@ React.useEffect(() => {
   return (
     <div className=" px-6 py-10" style={{minWidth:screen.width * 0.70}}>
       <h2 className="text-3xl font-bold mb-8 text-gray-700">
-        Crear Nuevo Libro
+        Pubicar Libro
       </h2>
 
       <form 
