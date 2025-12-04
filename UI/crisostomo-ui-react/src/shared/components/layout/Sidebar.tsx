@@ -28,7 +28,7 @@ export const Sidebar: React.FC = () => {
                 </li>
             
                 <li>
-                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/categories">Autores</Link>
+                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/authors">Autores</Link>
                 </li>
                 <li>
                     <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/editorials">Editorial</Link>

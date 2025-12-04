@@ -156,7 +156,7 @@ async def get_author_image(cod: str, width: int=300, height: int=300):
     image_path = os.path.join(pathIMG, f"{cod}.png")
 
     if not os.path.exists(image_path):
-        raise HTTPException(status_code=404, detail="Imagen del autor no encontrada")
+         image_path = os.path.join(pathIMG, f"default.png")
 
     try:
         # Abrir imagen original
