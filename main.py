@@ -16,13 +16,26 @@ from Presentation.Routes.BookRouter import BOOK_ROUTER
 from Presentation.Routes.CategoryRouter import CATEGORY_ROUTER
 from Presentation.Routes.EditorialRouter import EDITORIAL_ROUTER
 from Presentation.Routes.UsersRouter import USER_ROUTER
-
+from fastapi.middleware.cors import CORSMiddleware
 # ------------------------------
 # Inicializar Settings y Logger
 # ------------------------------
 settings = Settings()
 log = AppLogger(settings.LOG_PATH)
 app = FastAPI()
+origins = [
+    # "http://localhost:3000", # Origen permitido del frontend
+    # "https://tu-dominio.com",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"], # Permite todos los métodos HTTP
+    allow_headers=["*"], # Permite todos los encabezados
+)
 
 log.info("Iniciando AppLogger")
 
@@ -56,7 +69,7 @@ async def startup_event():
     log.info("PostgreSQLPool inicializado correctamente")
 
 
-    asyncio.create_task(GeneratePreviewImageDelegate.run(1))
+    # asyncio.create_task(GeneratePreviewImageDelegate.run(1))
     log.info("GeneratePreviewImageDelegate corriendo en hilo aparte")
 
 @app.on_event("shutdown")

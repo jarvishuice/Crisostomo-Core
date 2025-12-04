@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { API_URL } from "../../global/globalValues";
+
 
 export const Sidebar: React.FC = () => {
     return (

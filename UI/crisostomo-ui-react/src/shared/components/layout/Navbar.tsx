@@ -9,7 +9,7 @@ export const Navbar: React.FC = () => {
                     <img 
                         src={API_URL+"/author/logo/100/100"} 
                         alt="logo" 
-                        className="rounded-full bg-white h-12 w-12"
+                        className="rounded-full bg-blend-luminosity h-12 w-12"
                     />
                   <span className="text-white font-bold ml-2 text-lg">Crisostomo</span>
                 </div>

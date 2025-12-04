@@ -1,5 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "../../shared/components/layout/Layout";
+import { Login } from "../../features/auth/pages/Login";
+import { Register } from "../../features/auth/pages/Register";
+import { PrivateRoute } from "../../features/auth/components/PrivateRoute";
 
 // Pages importadas desde features
 // import BooksPage from "../../features/books/pages/BooksPage";
@@ -17,12 +20,16 @@ export default function AppRoutes() {
         <Routes>
             <Route element={<Layout />}>
                 {/* libros */}
-                <Route path="/books" element={<h3>holamuenod</h3>} />
+                <Route path="/books" element={<PrivateRoute><h3>holamuenod</h3></PrivateRoute>} />
                
 
                 {/* Home */}
                 <Route path="/" element={<h1>Bienvenido</h1>} />
             </Route>
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/Register" element={<Register/>}/>
+
+            
         </Routes>
     );
 }
