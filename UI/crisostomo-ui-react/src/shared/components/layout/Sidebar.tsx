@@ -31,7 +31,7 @@ export const Sidebar: React.FC = () => {
                     <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/categories">Autores</Link>
                 </li>
                 <li>
-                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/authors">Editorial</Link>
+                    <Link className="block px-3 py-2 hover:bg-gray-300 rounded" to="/editorials">Editorial</Link>
                 </li>
             </ul>
         </aside>

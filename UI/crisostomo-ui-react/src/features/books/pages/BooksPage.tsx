@@ -9,13 +9,16 @@ export function BooksPage(){
       navigate("/addBook"); // ruta a la que quieres ir
     };
     return (<div className="w-100 mt-20 ml-2"style={{width:screen.width * 0.70}}>
+      <div className="mb-4 flex justify-end">
        <button
+
       type="button"
       onClick={handleClick}
-      className="bg-blue-600 text-white px-4 py-2 rounded"
+      className="bg-blue-600 text-white px-4 py-2 rounded justify-end"
     >
     Publicar Libro
     </button>
+    </div>
        <div  className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full"> 
       
        <div className="flex flex-col">
