@@ -69,7 +69,7 @@ async def startup_event():
     log.info("PostgreSQLPool inicializado correctamente")
 
 
-    # asyncio.create_task(GeneratePreviewImageDelegate.run(1))
+    asyncio.create_task(GeneratePreviewImageDelegate.run(1))
     log.info("GeneratePreviewImageDelegate corriendo en hilo aparte")
 
 @app.on_event("shutdown")

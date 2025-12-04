@@ -151,7 +151,7 @@ async def get_image(cod: str, width: int = 300, height: int = 300):
     image_path = os.path.join(settings.BOOK_IMG_PATH, f"{cod}.png")
 
     if not os.path.exists(image_path):
-        raise HTTPException(status_code=404, detail="Imagen del libro no encontrada")
+       image_path = os.path.join(settings.BOOK_IMG_PATH, "default.png")
 
     try:
         # Abrir imagen original

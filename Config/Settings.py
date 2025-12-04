@@ -47,6 +47,8 @@ class Settings:
         self.AUTHOR_IMG_PATH = os.getenv("AUTHOR_IMG_PATH", "./NOLOCONSEGUI")
         self.BOOK_IMG_PATH = os.getenv("BOOK_IMG_PATH", "./NOLOCONSEGUI")
         self.PDF_PATH = os.getenv("PDF_PATH", "./NOLOCONSEGUI")
+        self.USER_PROFILE_IMG_PATH = os.getenv("USER_PROFILE_IMG_PATH", "./NOLOCONSEGUI")
+
 
     def __repr__(self):
         return f"<Settings env={self.APP_ENV} debug={self.APP_DEBUG}>"
