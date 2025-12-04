@@ -3,6 +3,9 @@ import { Layout } from "../../shared/components/layout/Layout";
 import { Login } from "../../features/auth/pages/Login";
 import { Register } from "../../features/auth/pages/Register";
 import { PrivateRoute } from "../../features/auth/components/PrivateRoute";
+import { BooksPage } from "../../features/books/pages/BooksPage";
+import { CreateBookForm } from "../../features/books/components/FormCreateBook";
+import CreateBookPage from "../../features/books/pages/CreateBookPage";
 
 // Pages importadas desde features
 // import BooksPage from "../../features/books/pages/BooksPage";
@@ -20,11 +23,11 @@ export default function AppRoutes() {
         <Routes>
             <Route element={<Layout />}>
                 {/* libros */}
-                <Route path="/books" element={<PrivateRoute><h3>holamuenod</h3></PrivateRoute>} />
-               
+                <Route path="/books" element={<PrivateRoute><BooksPage></BooksPage></PrivateRoute>} />
+               <Route  path="/addBook" element = {<PrivateRoute><CreateBookPage></CreateBookPage></PrivateRoute>}/>
 
                 {/* Home */}
-                <Route path="/" element={<h1>Bienvenido</h1>} />
+                <Route path="/" element={<PrivateRoute><h1>Bienvenido</h1></PrivateRoute>} />
             </Route>
             <Route path="/login" element={<Login/>}/>
             <Route path="/Register" element={<Register/>}/>
