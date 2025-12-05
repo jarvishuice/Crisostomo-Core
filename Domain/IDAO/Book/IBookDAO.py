@@ -66,6 +66,32 @@ class IBookDAO(ABC):
             Optional[BookReadEntity]: El libro si existe, de lo contrario None.
         """
         pass
+    @abstractmethod
+    async def get_by_author(self, code: str) -> List[BookReadEntity]:
+        """
+        Busca todos los lirbos por el codigo del author único (clave primaria).
+
+        Parámetros:
+            code (str): Código único del author.
+
+        Retorna:
+            List[BookReadEntity]: Liostya de libros del auithor, .
+        """
+        pass
+
+    @abstractmethod
+    async def get_by_user(self, code: str) -> List[BookReadEntity]:
+        """
+        Busca todos los lirbos por el codigo del usuario único (clave primaria).
+
+        Parámetros:
+            code (str): Código único del author.
+
+        Retorna:
+            List[BookReadEntity]: Listo ya de libros del auithor, .
+        """
+        pass
+
 
     @abstractmethod
     async def search(self, param: str) -> List[BookReadEntity]:

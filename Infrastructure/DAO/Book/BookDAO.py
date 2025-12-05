@@ -12,10 +12,92 @@ from Infrastructure.Providers.PostgreSQLPoolMaster import PostgreSQLPoolMaster
 
 
 class BookDAO(IBookDAO):
-
     def __init__(self, db: PostgreSQLPoolMaster = None):
         self.db = PostgreSQLPoolMaster.get_instance()
         self.logger = getLogger("AppLogger")
+    @override
+    async def get_by_author(self, code: str) -> List[BookReadEntity]:
+        query = """
+                                     SELECT b.code, b."name" as name_book, b.description,
+                                     b.knowledge_area, b.sub_area, b.category, b.editorial_code,
+                                     b.uploaded_by, b.created_at, b.author, b.proccess_img,
+                                     c."name"  as area_name, s."name"  as subarea_name,ca."name" as category_name,
+                                     e."name" as editorial_name,au.first_name || ' ' || au.last_name AS fullname_user,
+                                     a."name" as name_author
+                                     from public.book b
+                                     inner join dewey_classification c  on c.cod = b.knowledge_area 
+                                     left join dewey_classification s
+                                     on s.cod = b.sub_area
+                                     left join dewey_classification ca on ca.cod = b.category 
+                                     inner join editorial e  on e.code = b.editorial_code 
+                                     inner join app_user au on au.cod = b.uploaded_by 
+                                     inner join author a on a.cod = b.author
+                                     where b.author = %s
+                                     order by b."name" DESC
+
+
+                                     """
+        params = (code,)
+        try:
+            async with await self.db.get_connection() as conn:
+                # Configuramos cursor para obtener diccionarios
+                async with conn.cursor(row_factory=dict_row) as cur:
+                    await cur.execute(query, params)
+                    rows = await cur.fetchall()
+
+            books: List[BookReadEntity] = [
+                self._map_row_to_entity(row) for row in rows
+            ]
+
+            self.logger.info(f"libros leidos correctamente: {len(books)} en el author {code} ")
+            return books
+
+        except Exception as e:
+            self.logger.error(f"Error obteniendo todos los libros por author: {e}")
+            return []
+
+    @override
+    async def get_by_user(self, code: str) -> List[BookReadEntity]:
+        query = """
+                                             SELECT b.code, b."name" as name_book, b.description,
+                                             b.knowledge_area, b.sub_area, b.category, b.editorial_code,
+                                             b.uploaded_by, b.created_at, b.author, b.proccess_img,
+                                             c."name"  as area_name, s."name"  as subarea_name,ca."name" as category_name,
+                                             e."name" as editorial_name,au.first_name || ' ' || au.last_name AS fullname_user,
+                                             a."name" as name_author
+                                             from public.book b
+                                             inner join dewey_classification c  on c.cod = b.knowledge_area 
+                                             left join dewey_classification s
+                                             on s.cod = b.sub_area
+                                             left join dewey_classification ca on ca.cod = b.category 
+                                             inner join editorial e  on e.code = b.editorial_code 
+                                             inner join app_user au on au.cod = b.uploaded_by 
+                                             inner join author a on a.cod = b.author
+                                             where b.uploaded_by = %s
+                                             order by b."name" DESC
+
+
+                                             """
+        params = (code,)
+        try:
+            async with await self.db.get_connection() as conn:
+                # Configuramos cursor para obtener diccionarios
+                async with conn.cursor(row_factory=dict_row) as cur:
+                    await cur.execute(query, params)
+                    rows = await cur.fetchall()
+
+            books: List[BookReadEntity] = [
+                self._map_row_to_entity(row) for row in rows
+            ]
+
+            self.logger.info(f"libros leidos correctamente: {len(books)} en el usuario {code} ")
+            return books
+
+        except Exception as e:
+            self.logger.error(f"Error obteniendo todos los libros: {e}")
+            return []
+
+
 
     @override
     async def getBooksNoneImgPreview(self) -> List[str]:

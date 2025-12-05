@@ -117,6 +117,37 @@ async def filterBySubArea(subArea: str, dao: BookDAO = Depends(get_dao)) -> Resp
             detail=str(ex)
 
         )
+@BOOK_ROUTER.get("/filter/auhtor/{author}", status_code=status.HTTP_200_OK)
+async def filterByAuthor(author: str, dao: BookDAO = Depends(get_dao)) -> Response:
+    services = BookService(dao)
+    try:
+        res = await services.getByAuthor(author)
+
+        return Response(status_code=status.HTTP_200_OK,
+                        media_type="application/json",
+                        content=json.dumps([u.serialize() for u in res]))
+    except Exception as ex:
+        raise (HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ex)
+
+        ))
+
+@BOOK_ROUTER.get("/filter/user/{user}", status_code=status.HTTP_200_OK)
+async def filterByUser(user: str, dao: BookDAO = Depends(get_dao)) -> Response:
+    services = BookService(dao)
+    try:
+        res = await services.getByUser(user)
+
+        return Response(status_code=status.HTTP_200_OK,
+                        media_type="application/json",
+                        content=json.dumps([u.serialize() for u in res]))
+    except Exception as ex:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ex)
+
+        )
 @BOOK_ROUTER.get("/preview-pdf/{code}", status_code=status.HTTP_200_OK)
 async def preview_pdf(code: str, dao: BookDAO = Depends(get_dao)):
     """

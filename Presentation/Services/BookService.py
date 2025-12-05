@@ -1,8 +1,9 @@
 from logging import getLogger
 from typing import List
-
 from Application.UseCases.Book.CreateBookUseCase import CreateBookUseCase
 from Application.UseCases.Book.GetBookByAreaUseCase import GetBookByAreaUseCase
+from Application.UseCases.Book.GetBookByAuthorUseCase import GetBookByAuthorUseCase
+from Application.UseCases.Book.GetBookByUserUseCase import GetBookByUserUseCase
 from Application.UseCases.Book.GetBooksUseCase import GetBooksUseCase
 from Application.UseCases.Book.GetByCategoryUseCase import GetByCategoryUseCase
 from Application.UseCases.Book.GetBySubAreaUseCase import GetBySubAreaUseCase
@@ -22,6 +23,24 @@ class BookService:
         self.__GetBySubArea = GetBySubAreaUseCase(dao)
         self.__GetByArea = GetBookByAreaUseCase(dao)
         self.__SearchBook = SearchBookUseCase(dao)
+        self.__GetByAuthor = GetBookByAuthorUseCase(dao)
+        self.__GetByUser = GetBookByUserUseCase(dao)
+
+    async def getByUser(self, user: str) -> List[BookReadEntity]:
+        try:
+            return await self.__GetByUser.Execute(user)
+
+        except Exception as e:
+            self.__log.error(e)
+            raise e
+
+    async def getByAuthor(self, author: str) -> List[BookReadEntity]:
+        try:
+            return await self.__GetByAuthor.Execute(author)
+
+        except Exception as e:
+            self.__log.error(e)
+            raise e
 
     async def getByArea(self, area: str) -> List[BookReadEntity]:
         try:
@@ -55,9 +74,9 @@ class BookService:
             self.__log.error(e)
             raise e
 
-    async def save(self, entity: BookEntity,pdf_file) -> bool:
+    async def save(self, entity: BookEntity, pdf_file) -> bool:
         try:
-            return await self.__SaveBook.Execute(entity,pdf_file)
+            return await self.__SaveBook.Execute(entity, pdf_file)
         except Exception as e:
             self.__log.error(e)
             raise e
