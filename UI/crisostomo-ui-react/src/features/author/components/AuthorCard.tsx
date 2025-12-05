@@ -43,7 +43,7 @@ export const AuthorCard: React.FC<AuthorCardProps> = ({
                 {/* Botones inferiores, siempre dentro del card */}
                 <div className="mt-4 flex gap-2">
                     <button
-                        onClick={() => navigate(`/author/view/${cod}`)}
+                        onClick={() => navigate(`/author/${cod}`)}
                         className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors"
                     >
                         Ver

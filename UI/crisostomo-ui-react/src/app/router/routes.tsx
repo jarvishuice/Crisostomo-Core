@@ -9,6 +9,7 @@ import { ReadBook } from "../../features/books/pages/ReadBook";
 import EditorialesPage from "../../features/editorials/pages/EditorialPage";
 import AuthorsPage from "../../features/author/pages/AuthorsPage";
 import AuthorEditPage from "../../features/author/pages/AuhtorEditPage";
+import ViewAuthor from "../../features/author/pages/ViewAuthor";
 
 
 // Layout general
@@ -27,6 +28,8 @@ export default function AppRoutes() {
                 {/* Autores */}
                 <Route path="/authors" element={<PrivateRoute><AuthorsPage/></PrivateRoute>} />
                 <Route path="/author/edit/:cod" element={<AuthorEditPage />} />
+                <Route path="/author/:cod" element={<ViewAuthor />} />
+
                 <Route path="/" element={<PrivateRoute><h1>Bienvenido</h1></PrivateRoute>} />
             </Route>
             <Route path="/login" element={<Login/>}/>

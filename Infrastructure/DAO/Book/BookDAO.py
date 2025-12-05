@@ -328,7 +328,7 @@ class BookDAO(IBookDAO):
                                                inner join editorial e  on e.code = b.editorial_code 
                                                inner join app_user au on au.cod = b.uploaded_by 
                                                inner join author a on a.cod = b.author
-                                               where b."name" ilike %s or description ilike %s 
+                                               where b."name" ilike %s or b.description ilike %s 
                                                order by b."name" DESC
 
 
